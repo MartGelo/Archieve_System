@@ -205,32 +205,34 @@ public class signUp extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void signupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_signupActionPerformed
-        String userEmail = email.getText();
-        String userPassword = new String(password.getPassword());
-        String userFullName = fullname.getText();
+                                      
+    String userEmail = email.getText();
+    String userPassword = new String(password.getPassword());
+    String userFullName = fullname.getText();
 
-        try {
-            
-            PreparedStatement ps = (PreparedStatement) con.prepareStatement("INSERT INTO users (email, password, full_name) VALUES (?, ?, ?)");
-            ps.setString(1, userEmail);
-            ps.setString(2, userPassword);
-            ps.setString(3, userFullName);
+    try {
+        
+        PreparedStatement ps = (PreparedStatement) con.prepareStatement("INSERT INTO users (email, password, full_name, status) VALUES (?, ?, ?, ?)");
+        ps.setString(1, userEmail);
+        ps.setString(2, userPassword);
+        ps.setString(3, userFullName);
+        ps.setString(4, "user"); // Set the default status as "user"
 
+        int rowsInserted = ps.executeUpdate();
+        if (rowsInserted > 0) {
+            JOptionPane.showMessageDialog(this, "Sign up successful!");
 
-            int rowsInserted = ps.executeUpdate();
-            if (rowsInserted > 0) {
-                JOptionPane.showMessageDialog(this, "Sign up successful!");
-                
-                email.setText("");
-                password.setText("");
-                fullname.setText("");
-            } else {
-                JOptionPane.showMessageDialog(this, "Sign up failed. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-
-        } catch (SQLException ex) {
-            Logger.getLogger(signUp.class.getName()).log(Level.SEVERE, null, ex);
+            email.setText("");
+            password.setText("");
+            fullname.setText("");
+        } else {
+            JOptionPane.showMessageDialog(this, "Sign up failed. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
         }
+
+    } catch (SQLException ex) {
+        Logger.getLogger(signUp.class.getName()).log(Level.SEVERE, null, ex);
+    }
+
     }//GEN-LAST:event_signupActionPerformed
 
     private void signinActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_signinActionPerformed

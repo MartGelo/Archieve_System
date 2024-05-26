@@ -6,6 +6,7 @@ package archivesystem1;
 
 import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.PreparedStatement;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -244,35 +245,51 @@ public class login extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void loginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginActionPerformed
+
     String userEmail = email.getText();
     String userPassword = new String(password.getPassword());
 
-    dashboard labs = new dashboard();    
+    userdashboard dashboardPanel = new userdashboard();    
+    adminPanel adminPanel = null;
+        try {
+            adminPanel = new adminPanel();
+        } catch (IOException ex) {
+            Logger.getLogger(login.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     try {
-    PreparedStatement ps = (PreparedStatement) con.prepareStatement("SELECT * FROM users WHERE email = ? AND password = ?");
-    ps.setString(1, userEmail);
-    ps.setString(2, userPassword);
-    ResultSet rs = ps.executeQuery();
-    if (rs.next()) {
-        // If login is successful, close the success message dialog
-        JOptionPane.showMessageDialog(this, "Login successful!");
-        
-        // Close the login frame or panel
-        setVisible(false); // Assuming this code is inside your login frame or panel
-        
-        // Show the labs page
-        labs.setVisible(true);
-        
-        // Optionally, you can clear the input fields after successful login
-        email.setText("");
-        password.setText("");
-    } else {
-        // If login fails, show an error dialog
-        JOptionPane.showMessageDialog(this, "Login failed. Please check your credentials.", "Error", JOptionPane.ERROR_MESSAGE);
+        PreparedStatement ps = (PreparedStatement) con.prepareStatement("SELECT * FROM users WHERE email = ? AND password = ?");
+        ps.setString(1, userEmail);
+        ps.setString(2, userPassword);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            String userStatus = rs.getString("status"); // Assuming the column name for status is "status"
+
+            // If login is successful, close the success message dialog
+            JOptionPane.showMessageDialog(this, "Login successful!");
+
+            // Close the login frame or panel
+            setVisible(false); // Assuming this code is inside your login frame or panel
+
+            if (userStatus.equalsIgnoreCase("admin")) { // Assuming the status is either "admin" or "user"
+                // Show the dashboard panel
+                adminPanel.setVisible(true);
+            } else { // Assuming the status is either "admin" or "user"
+                // Show the user panel
+                dashboardPanel.setVisible(true);
+            }
+
+            // Optionally, you can clear the input fields after successful login
+            email.setText("");
+            password.setText("");
+        } else {
+            // If login fails, show an error dialog
+            JOptionPane.showMessageDialog(this, "Login failed. Please check your credentials.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    } catch (SQLException ex) {
+        java.util.logging.Logger.getLogger(login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
     }
-} catch (SQLException ex) {
-    java.util.logging.Logger.getLogger(login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-}
+
     }//GEN-LAST:event_loginActionPerformed
 
     private void signupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_signupActionPerformed
